@@ -23,3 +23,28 @@ export const registerUser = TryCatch(async (req: Request, res: Response) => {
     token
    })
 })
+
+export const loginUser = TryCatch(async(req:Request,res:Response)=>{
+    const {email,password} = req.body;
+    const user = await User.findOne({email});
+    if(!user){
+        res.status(404).json({
+            message:"User not exists",
+        })
+        return;
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if(!isMatch){
+        res.status(400).json({
+            message:"Invalid credentials",
+        })
+        return;
+    }
+    const token = jwt.sign({id: user._id}, process.env.JWT_SECRET as string, {expiresIn: "7d"});
+    res.status(200).json({
+        success: true,
+        message: "User logged in successfully",
+        user,
+        token
+    })
+})
