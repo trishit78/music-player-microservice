@@ -3,6 +3,9 @@ import TryCatch from "./TryCatch.js";
 import { User } from "./model.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import type { AuthRequest } from "./middleware.js";
+
+
 export const registerUser = TryCatch(async (req: Request, res: Response) => {
    const {name, email, password} = req.body;
    const user = await User.findOne({email});
@@ -48,3 +51,11 @@ export const loginUser = TryCatch(async(req:Request,res:Response)=>{
         token
     })
 })
+
+export const myProfile = TryCatch(async (req: AuthRequest, res) => {
+  const user = req.user;
+
+  res.json(user);
+});
+
+

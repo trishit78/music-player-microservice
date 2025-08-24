@@ -16,7 +16,9 @@ export const isAuth=async (req:AuthRequest,res:Response,next:NextFunction):Promi
     
     
     try{
-    const token = req.headers.token as string;
+        const token = req.headers["token"] as string;
+
+   
     if(!token){
         res.status(401).json({
             success: false,
@@ -24,10 +26,10 @@ export const isAuth=async (req:AuthRequest,res:Response,next:NextFunction):Promi
         })
         return;
     }
-    
+    console.log(process.env.JWT_SECRET);
         const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
 
-        if(!decoded || !decoded._id){
+        if(!decoded || !decoded.id){
             res.status(401).json({
                 success: false,
                 message: "Invalid token"
@@ -35,7 +37,7 @@ export const isAuth=async (req:AuthRequest,res:Response,next:NextFunction):Promi
             return;
         }
 
-        const userId = decoded._id;
+        const userId = decoded.id;
         const user= await User.findById(userId).select("-password");
         if(!user){
             res.status(401).json({
@@ -45,7 +47,7 @@ export const isAuth=async (req:AuthRequest,res:Response,next:NextFunction):Promi
             return;
         }
 
-        req.user = decoded.id;
+        req.user = user;
         next();
     }catch(err){
         res.status(401).json({
@@ -53,10 +55,4 @@ export const isAuth=async (req:AuthRequest,res:Response,next:NextFunction):Promi
             message: "Invalid token"
         })
     }
-}
-
-export const myProfile=async (req:AuthRequest,res:Response):Promise<void>=>{
-    const userId = req.user;
- 
- res.json(userId)
 }
