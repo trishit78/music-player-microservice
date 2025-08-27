@@ -3,6 +3,8 @@ import mongoose from 'mongoose'
 
 import dotenv from "dotenv";
 import userRoutes from "./route.js";
+import cors from 'cors';
+
 dotenv.config();
 
 const app = express();
@@ -10,6 +12,10 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+app.use(cors());
+
+app.use("/api/v1", userRoutes);
+
 
 const connectDB = async () => {
     try{
@@ -23,8 +29,6 @@ const connectDB = async () => {
         throw error;
     }
 }
-
-app.use("/api/v1", userRoutes);
 
 
 
