@@ -132,9 +132,9 @@ const isAlbum = await sql`SELECT id FROM albums WHERE id = ${albumId}`;
      });
      return;
     }
- 
    const song = await sql`SELECT id FROM songs WHERE id = ${Number(req.params.id)}`;
-    
+
+
    if(song.length === 0){
         res.status(400).json({
                 success: false,
@@ -142,8 +142,6 @@ const isAlbum = await sql`SELECT id FROM albums WHERE id = ${albumId}`;
             });
             return;
     }
-
- 
     const file = req.file;
     if(!file){
      res.status(400).json({
@@ -153,14 +151,14 @@ const isAlbum = await sql`SELECT id FROM albums WHERE id = ${albumId}`;
      return;
     }
  
-    const fileBuffer = getBuffer(file);
+    const fileBuffer = getBuffer(file);          // logic to convert file to buffer
     if(!fileBuffer || !fileBuffer.content){
      res.status(500).json({
          success: false,
          message: "failed to generate file buffer"
      });
      return;
-    }
+    }                            //logic to upload file to cloudinary
     const cloud = await cloudinary.uploader.upload(fileBuffer.content,{ folder: "songs",resource_type:"image" });
     
     const result = await sql`
