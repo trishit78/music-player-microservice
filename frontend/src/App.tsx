@@ -2,7 +2,7 @@ import { Route, Routes, BrowserRouter } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import { useUserData } from "./context/UserContext";
-import Loading from "./components/Loading";
+//import Loading from "./components/Loading";
 import Register from "./pages/Register";
 
 const App = () => {

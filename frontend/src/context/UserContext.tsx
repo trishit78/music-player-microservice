@@ -35,7 +35,8 @@ interface UserContextType{
         password:string,
         navigate:(path:string)=>void
     )=>Promise<void>
-    logoutUser:()=>Promise<void>
+    logoutUser:()=>Promise<void>;
+    addToPlaylist:(id:string)=>Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -67,15 +68,6 @@ export const UserProvider:React.FC<UserProviderProps> = ({children}) =>{
            setBtnLoading(false);
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     async function loginUser(email:string,password:string,navigate:(path:string)=>void){
         setBtnLoading(true);
@@ -139,12 +131,37 @@ export const UserProvider:React.FC<UserProviderProps> = ({children}) =>{
         }
     }
 
+
+    async function addToPlaylist(id:string) {
+        console.log('hello')
+        const token = localStorage.getItem("token");
+        if (!token) {
+            console.log("No token found in localStorage");
+            setLoading(false);
+            return;
+        }
+        try {
+            const {data} = await axios.post(`${server}/api/v1/song/${id}`,{},{
+                headers:{
+                    "token":token
+                }
+            });
+console.log('data of song',data)
+            toast.success(data.success);
+alert(data.success)
+
+            fetchUser()
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(()=>{
         fetchUser()
     },[])
 
 
-    return <UserContext.Provider   value={{user,isAuth,loading,btnLoading,loginUser,registerUser,logoutUser}}>{children}   <Toaster /> </UserContext.Provider>
+    return <UserContext.Provider   value={{user,isAuth,loading,btnLoading,loginUser,registerUser,logoutUser,addToPlaylist}}>{children}   <Toaster /> </UserContext.Provider>
 }
 
 
