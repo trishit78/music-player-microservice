@@ -28,7 +28,14 @@ interface UserContextType{
         email:string,
         password:string,
         navigate:(path:string)=>void
+    )=>Promise<void>;
+    registerUser:(
+        name:string,
+        email:string,
+        password:string,
+        navigate:(path:string)=>void
     )=>Promise<void>
+    logoutUser:()=>Promise<void>
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -42,10 +49,38 @@ export const UserProvider:React.FC<UserProviderProps> = ({children}) =>{
     const [loading,setLoading] = useState(true);
     const [isAuth,setIsAuth] = useState(false);
     const [btnLoading,setBtnLoading] = useState(false);
+    
+    async function registerUser(name:string,email:string,password:string,navigate:(path:string)=>void){
+        setBtnLoading(true);
+        try {
+            const {data} = await axios.post(`${server}/api/v1/user/register`,{
+                name,email,password
+            })
+            toast.success(data.message);
+            localStorage.setItem("token",data.token);
+            setUser(data.user);
+            setIsAuth(true);
+            setBtnLoading(false);
+            navigate("/");
+        } catch (error) {
+           console.log(error);
+           setBtnLoading(false);
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     async function loginUser(email:string,password:string,navigate:(path:string)=>void){
         setBtnLoading(true);
         try {
-            const {data} = await axios.post(`{server}/api/v1/user/login`,{
+            const {data} = await axios.post(`${server}/api/v1/user/login`,{
                 email,password
             })
             toast.success(data.message);
@@ -60,27 +95,56 @@ export const UserProvider:React.FC<UserProviderProps> = ({children}) =>{
         }
     }
 
+    async function logoutUser() {
+        localStorage.clear();
+        setUser(null);
+        setIsAuth(false);
+        toast.success("user logged out")
+    }
+
     async function fetchUser() {
         try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.log("No token found in localStorage");
+                setLoading(false);
+                return;
+            }
+
+            console.log("Token exists, fetching user...");
+
             const {data} = await axios.get(`${server}/api/v1/user/me`,{
                 headers:{
-                    token:localStorage.getItem("token")
+                    "token": token
                 }
             });
 
+            console.log("User fetched successfully:", data);
             setUser(data);
             setIsAuth(true);
+        } catch (error: any) {
+            console.log("Error fetching user:", error);
+            console.log("Error response:", error.response?.data);
+            
+            // Clear invalid token
+            if (error.response?.status === 401) {
+                localStorage.removeItem("token");
+                console.log("Token cleared due to 401 error");
+            }
+            
+            setIsAuth(false);
+            setUser(null);
+        } finally {
             setLoading(false);
-        } catch (error) {
-            console.log(error)
         }
     }
+
     useEffect(()=>{
         fetchUser()
     },[])
 
 
-    return <UserContext.Provider   value={{user,isAuth,loading,btnLoading,loginUser}}>{children}   <Toaster /> </UserContext.Provider>
+    return <UserContext.Provider   value={{user,isAuth,loading,btnLoading,loginUser,registerUser,logoutUser}}>{children}   <Toaster /> </UserContext.Provider>
 }
 
 

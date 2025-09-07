@@ -2,16 +2,18 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useUserData } from "../context/UserContext";
 
-const Login = () => {
+const Register = () => {
 
     const [email,setEmail] = useState("");
     const [password,setPassword] = useState("");
     const  navigate = useNavigate();
-    const {loginUser,btnLoading} = useUserData();
+    const {registerUser,btnLoading} = useUserData();
+  const [name,setName] = useState("");
+
 
     async function submitHandler(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        loginUser(email,password,navigate);
+        registerUser(name,email,password,navigate);
     }
   return (
     <div className="flex items-center justify-center h-screen max-h-screen">
@@ -20,6 +22,20 @@ const Login = () => {
           Login To Spotify
         </h2>
         <form className="mt-8" onSubmit={submitHandler} >
+        <div className="mb-4">
+            <label className="block text-sm font-medium mb-1">
+              Name
+            </label>
+            <input
+              type="name"
+              placeholder="Name"
+              className="auth-input"
+             value={name}
+             onChange={e=>setName(e.target.value)}
+              required
+            />
+          </div>
+
           <div className="mb-4">
             <label className="block text-sm font-medium mb-1">
               Email or username
@@ -47,17 +63,17 @@ const Login = () => {
           </div>
 
           <button disabled={btnLoading} className="auth-btn">
-            {btnLoading ? "Please Wait..." : "Login"}
+            {btnLoading ? "Please Wait..." : "Register"}
           </button>
          
         </form>
 
         <div className="text-center mt-6">
           <Link
-            to={"/register"}
+            to={"/login"}
             className="text-sm text-gray-400 hover:text-gray-300"
           >
-            Don't have an Account?
+             Have an Account?
           </Link>
         </div>
       </div>
@@ -65,4 +81,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

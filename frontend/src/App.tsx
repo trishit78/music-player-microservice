@@ -3,11 +3,12 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import { useUserData } from "./context/UserContext";
 import Loading from "./components/Loading";
+import Register from "./pages/Register";
 
 const App = () => {
 
-  const {isAuth,loading} = useUserData();
-console.log(isAuth)
+  const {isAuth} = useUserData();
+
   return (
     <>
     {/* {
@@ -18,6 +19,7 @@ console.log(isAuth)
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={ isAuth ? <Home />:<Login />} />
+        <Route path="/register" element={ isAuth ? <Home />:<Register />} />
       </Routes>
       </BrowserRouter>
       
