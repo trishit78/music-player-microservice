@@ -6,6 +6,7 @@ import { useUserData } from "./context/UserContext";
 import Register from "./pages/Register";
 import Album from "./pages/Album";
 import Playlist from "./pages/Playlist";
+import Admin from "./pages/Admin";
 
 const App = () => {
 
@@ -22,6 +23,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/album/:id" element={<Album />} />
         <Route path="/login" element={ isAuth ? <Home />:<Login />} />
+        <Route path="/admin/dashboard" element={ isAuth ? <Admin />:<Login />} />
         <Route path="/playlist" element={ isAuth ? <Playlist />:<Login />} />
         <Route path="/register" element={ isAuth ? <Home />:<Register />} />
       </Routes>

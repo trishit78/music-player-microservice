@@ -29,11 +29,14 @@ interface SongContextType {
     setSelectedSong:(id:string)=> void;
     albums:Album[];
     fetchSingleSong:()=>Promise<void>
-    fetchAlbumSong:(id:string)=>Promise<void>
+   
     nextSong:()=>void
     prevSong:()=>void
     albumSong:Song[],
     albumData:Album | null
+    fetchSongs:()=>Promise<void>
+    fetchAlbums:()=>Promise<void>
+    fetchAlbumSongs:(id:string)=>Promise<void>
 }
 
 const SongContext = createContext<SongContextType | undefined>(undefined);
@@ -141,7 +144,7 @@ useEffect(()=>{
 },[])
     return(
 
-        <SongContext.Provider value={{songs,song,albums,selectedSong,setIsPlaying,isPlaying,albumData,fetchAlbumSongs,albumSong,setSelectedSong,loading,fetchSingleSong,nextSong,prevSong}}>{children}</SongContext.Provider>
+        <SongContext.Provider value={{songs,song,albums,selectedSong,setIsPlaying,isPlaying,albumData,fetchAlbumSongs,fetchAlbums,fetchSongs,albumSong,setSelectedSong,loading,fetchSingleSong,nextSong,prevSong}}>{children}</SongContext.Provider>
     ) 
 
 }
