@@ -114,7 +114,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         return;
       }
 
-      console.log("Token exists, fetching user...");
+      //console.log("Token exists, fetching user...");
 
       const { data } = await axios.get(`${server}/api/v1/user/me`, {
         headers: {
@@ -122,7 +122,7 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
         },
       });
 
-      console.log("User fetched successfully:", data);
+      //console.log("User fetched successfully:", data);
       setUser(data);
       setIsAuth(true);
     } catch (error: any) {

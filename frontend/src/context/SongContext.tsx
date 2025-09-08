@@ -29,8 +29,11 @@ interface SongContextType {
     setSelectedSong:(id:string)=> void;
     albums:Album[];
     fetchSingleSong:()=>Promise<void>
-    nextSong:()=>Promise<void>
-    prevSong:()=>Promise<void>
+    fetchAlbumSong:(id:string)=>Promise<void>
+    nextSong:()=>void
+    prevSong:()=>void
+    albumSong:Song[],
+    albumData:Album | null
 }
 
 const SongContext = createContext<SongContextType | undefined>(undefined);
@@ -108,13 +111,37 @@ const prevSong = useCallback(()=>{
     }
 },[index,songs])
 
+
+const [albumSong,setAlbumSong] = useState<Song[] >([]);
+const [albumData,setAlbumData] = useState<Album | null>(null);
+
+const fetchAlbumSongs = useCallback(async(id:string)=>{
+    setLoading(true);
+    try {
+        const {data} = await axios.get<{songs:Song[]; album:Album}>(`${server}/api/v1/album/${id}`);
+        
+        console.log(data)
+        
+        setAlbumData(data.album);
+        setAlbumSong(data.songs);
+
+    } catch (error) {
+        console.log(error);
+    }
+    finally{
+        setLoading(false);
+    }
+},[])
+
+
+
 useEffect(()=>{
     fetchSongs();
     fetchAlbums();
 },[])
     return(
 
-        <SongContext.Provider value={{songs,song,albums,selectedSong,setIsPlaying,isPlaying,setSelectedSong,loading,fetchSingleSong,nextSong,prevSong}}>{children}</SongContext.Provider>
+        <SongContext.Provider value={{songs,song,albums,selectedSong,setIsPlaying,isPlaying,albumData,fetchAlbumSongs,albumSong,setSelectedSong,loading,fetchSingleSong,nextSong,prevSong}}>{children}</SongContext.Provider>
     ) 
 
 }
