@@ -8,6 +8,7 @@ const router = express.Router();
 router.post("/user/register", registerUser);
 router.post("/user/login", loginUser);
 router.get("/user/me",isAuth,myProfile);
+router.post("/user/playlist/toggle", isAuth, addToPlaylist);
 router.get("/song/:id",isAuth,addToPlaylist);
 
 export default router;

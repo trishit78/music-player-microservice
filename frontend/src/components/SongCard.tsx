@@ -2,6 +2,7 @@ import { FaBookmark, FaPlay } from "react-icons/fa";
 
 import fallbackImg from "../../public/photo.jpeg";
 import { useUserData } from "../context/UserContext";
+import { useSongData } from "../context/SongContext";
 //import { useUserData } from "../context/UserContext";
 
 interface SongCardProps {
@@ -12,7 +13,14 @@ interface SongCardProps {
 }
 
 const SongCard: React.FC<SongCardProps> = ({ image, name, desc, id }) => {
-  const { addToPlaylist, user } = useUserData();
+  const { addToPlaylist, isAuth } = useUserData();
+
+  const {setSelectedSong,setIsPlaying} = useSongData()
+
+const playSongHandler = ()=>{
+  setSelectedSong(id);
+  setIsPlaying(true)
+}
 
   const saveToPlayListHandler = () => {
     addToPlaylist(id);
@@ -28,10 +36,16 @@ const SongCard: React.FC<SongCardProps> = ({ image, name, desc, id }) => {
           className="mr-1 w-[160px] rounded"
         />
         <div className="absolute bottom-2 right-2 flex gap-2">
-            <button className="bg-green-500 text-black p-2 rounded-full hover:bg-green-400 transition-colors duration-300"><FaPlay/></button>
             <button className="bg-green-500 text-black p-2 rounded-full hover:bg-green-400 transition-colors duration-300"
-            onClick={saveToPlayListHandler}
-            ><FaBookmark/></button>
+            onClick={playSongHandler}
+            ><FaPlay/></button>
+            {isAuth && (
+
+              
+              <button className="bg-green-500 text-black p-2 rounded-full hover:bg-green-400 transition-colors duration-300"
+              onClick={saveToPlayListHandler}
+              ><FaBookmark/></button>
+            )}
         </div>
       </div>
 

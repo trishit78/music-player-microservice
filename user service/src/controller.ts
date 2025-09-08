@@ -59,42 +59,111 @@ export const myProfile = TryCatch(async (req: AuthRequest, res) => {
 });
 
 
-export const addToPlaylist = TryCatch(async(req:AuthRequest,res)=>{
+// export const addToPlaylist = TryCatch(async(req:AuthRequest,res)=>{
+    
+//     const user = await User.findById(userId);
+//     if(!user){
+    //         res.status(404).json({
+        //             message:"No user with this id"
+        //         })
+        //         return;
+        //     }
+        
+        //     const songId = req.params.id;
+//     if(!songId){
+    //         res.status(400).json({
+//             message:"Song id is required"
+//         })
+//         return;
+//     }
+
+//     if(user?.playlist.includes(songId)){
+    //         const index = user.playlist.indexOf(songId);
+    //         user.playlist.splice(index,1);
+    
+    //         await user.save();
+    
+    //         res.json({
+        //             message:"Removed from playlist"
+        //         })
+        //         return;
+        //     }
+        //     user.playlist.push(songId);
+        
+        //     await user.save();
+        
+        //     res.json({
+            //         message:"Added to playlist"
+            //     })
+            // })
+            
+            // const userId = req.user?._id;
+
+
+export const addToPlaylist = TryCatch(async (req: AuthRequest, res) => {
+    const { songId } = req.body;
     const userId = req.user?._id;
-
-    const user = await User.findById(userId);
-    if(!user){
+  
+    if (!userId) {
+      res.status(401).json({
+        success: false,
+        message: "User not authenticated"
+      });
+      return;
+    }
+  
+    if (!songId) {
+      res.status(400).json({
+        success: false,
+        message: "Song ID is required"
+      });
+      return;
+    }
+  
+    try {
+      // Check if song is already in playlist
+      const user = await User.findById(userId);
+      if (!user) {
         res.status(404).json({
-            message:"No user with this id"
-        })
+          success: false,
+          message: "User not found"
+        });
         return;
+      }
+  
+      let updatedUser;
+      let message;
+  
+      if (user.playlist.includes(songId)) {
+        // Song exists, remove it from playlist
+        updatedUser = await User.findByIdAndUpdate(
+          userId,
+          { $pull: { playlist: songId } },
+          { new: true }
+        ).select("-password");
+        message = "Song removed from playlist";
+      } else {
+        // Song doesn't exist, add it to playlist
+        updatedUser = await User.findByIdAndUpdate(
+          userId,
+          { $push: { playlist: songId } },
+          { new: true }
+        ).select("-password");
+        message = "Song added to playlist";
+      }
+  
+      res.status(200).json({
+        success: true,
+        message: message,
+        user: updatedUser,
+        isInPlaylist: !user.playlist.includes(songId) // Return new state
+      });
+    } catch (error) {
+      console.error("Toggle playlist error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error"
+      });
     }
-
-    const songId = req.params.id;
-    if(!songId){
-        res.status(400).json({
-            message:"Song id is required"
-        })
-        return;
-    }
-
-    if(user?.playlist.includes(songId)){
-        const index = user.playlist.indexOf(songId);
-        user.playlist.splice(index,1);
-
-        await user.save();
-
-        res.json({
-            message:"Removed from playlist"
-        })
-        return;
-    }
-    user.playlist.push(songId);
-
-    await user.save();
-
-    res.json({
-        message:"Added to playlist"
-    })
-})
-
+  });
+  
